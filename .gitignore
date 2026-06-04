@@ -22,6 +22,4 @@ yarn-error.log
 /.vscode
 /.zed
 AGENTS.md
-/wa_services/.wwebjs_auth
-/wa_services/.wwebjs_cache
-/wa_services/node_modules
+/wa_services/
