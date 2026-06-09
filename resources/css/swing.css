@@ -1,0 +1,523 @@
+/* ===================================================
+   Java Swing Metal Look & Feel - CSS Theme
+   =================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+
+/* ---- CSS Variables (Swing Metal Colors) ---- */
+:root {
+    --swing-bg: #C0C0C0;
+    --swing-panel: #D4D0C8;
+    --swing-light: #FFFFFF;
+    --swing-dark: #808080;
+    --swing-darker: #404040;
+    --swing-text: #000000;
+    --swing-text-disabled: #808080;
+    --swing-title-bg: #000080;
+    --swing-title-text: #FFFFFF;
+    --swing-select: #000080;
+    --swing-select-text: #FFFFFF;
+    --swing-field-bg: #FFFFFF;
+    --swing-table-alt: #EEF2F7;
+    --swing-error: #CC0000;
+    --swing-success: #006600;
+    --swing-warning: #CC6600;
+    --swing-font: 'Dialog', Arial, sans-serif;
+    --swing-mono: 'Courier New', monospace;
+}
+
+/* ---- Reset & Base ---- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: var(--swing-font);
+    font-size: 11px;
+    color: var(--swing-text);
+    background-color: var(--swing-bg);
+    cursor: default;
+    user-select: none;
+}
+
+/* ---- Utility: Raised Border (Buttons, Panels) ---- */
+.swing-raised {
+    border: 1px solid;
+    border-color: var(--swing-light) var(--swing-dark) var(--swing-dark) var(--swing-light);
+    outline: 1px solid var(--swing-darker);
+    outline-offset: -2px;
+}
+
+/* ---- Utility: Inset/Sunken Border (Text fields, scroll panes) ---- */
+.swing-inset {
+    border: 1px solid;
+    border-color: var(--swing-dark) var(--swing-light) var(--swing-light) var(--swing-dark);
+    outline: 1px solid var(--swing-darker);
+    outline-offset: -2px;
+}
+
+/* ---- Utility: Etched Border (Group boxes, panels) ---- */
+.swing-etched {
+    border: 1px solid var(--swing-dark);
+    box-shadow: inset 1px 1px 0 var(--swing-light);
+}
+
+/* ---- Window / JFrame ---- */
+.swing-window {
+    background: var(--swing-bg);
+}
+
+/* ---- Title Bar (JInternalFrame / active) ---- */
+.swing-titlebar {
+    background: linear-gradient(to right, var(--swing-title-bg), #1084D0);
+    color: var(--swing-title-text);
+    font-weight: bold;
+    font-size: 11px;
+    padding: 3px 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 22px;
+}
+.swing-titlebar .title-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+.swing-titlebar .title-text { flex: 1; overflow: hidden; white-space: nowrap; }
+.swing-titlebar .title-buttons { display: flex; gap: 2px; }
+.swing-titlebar .title-btn {
+    width: 16px;
+    height: 14px;
+    background: var(--swing-bg);
+    border: 1px solid;
+    border-color: var(--swing-light) var(--swing-dark) var(--swing-dark) var(--swing-light);
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--swing-text);
+    flex-shrink: 0;
+}
+.swing-titlebar .title-btn:hover { background: #E0E0E0; }
+
+/* ---- JMenuBar ---- */
+.swing-menubar {
+    background: var(--swing-bg);
+    border-bottom: 2px solid var(--swing-dark);
+    display: flex;
+    align-items: stretch;
+    height: 22px;
+    padding: 0 2px;
+    flex-shrink: 0;
+}
+.swing-menubar .menu-item {
+    padding: 2px 8px;
+    font-size: 11px;
+    color: var(--swing-text);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    position: relative;
+}
+.swing-menubar .menu-item:hover,
+.swing-menubar .menu-item.active {
+    background: var(--swing-select);
+    color: var(--swing-select-text);
+}
+.swing-menubar .menu-separator {
+    width: 1px;
+    background: var(--swing-dark);
+    margin: 3px 2px;
+}
+.swing-menubar .menu-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.swing-menubar .menu-user {
+    padding: 2px 6px;
+    font-size: 10px;
+    color: var(--swing-text);
+}
+
+/* ---- JToolBar ---- */
+.swing-toolbar {
+    background: var(--swing-bg);
+    border-bottom: 1px solid var(--swing-dark);
+    border-top: 1px solid var(--swing-light);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px 4px;
+    flex-shrink: 0;
+}
+.swing-toolbar .toolbar-sep {
+    width: 1px;
+    height: 18px;
+    background: var(--swing-dark);
+    border-right: 1px solid var(--swing-light);
+    margin: 0 3px;
+}
+
+/* ---- JButton ---- */
+.swing-btn {
+    background: var(--swing-bg);
+    border: 1px solid;
+    border-color: var(--swing-light) var(--swing-dark) var(--swing-dark) var(--swing-light);
+    outline: 1px solid var(--swing-darker);
+    outline-offset: -2px;
+    color: var(--swing-text);
+    font-family: var(--swing-font);
+    font-size: 11px;
+    padding: 3px 10px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+.swing-btn:hover { background: #D0CCB8; }
+.swing-btn:active,
+.swing-btn.pressed {
+    border-color: var(--swing-dark) var(--swing-light) var(--swing-light) var(--swing-dark);
+    padding: 4px 9px 2px 11px;
+}
+.swing-btn-primary {
+    border-color: var(--swing-light) var(--swing-dark) var(--swing-dark) var(--swing-light);
+    outline: 2px solid var(--swing-darker);
+    outline-offset: -3px;
+    font-weight: bold;
+}
+.swing-btn-toolbar {
+    padding: 2px 4px;
+    font-size: 10px;
+}
+.swing-btn-icon {
+    width: 24px;
+    height: 22px;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ---- JTextField / JTextArea ---- */
+.swing-field {
+    background: var(--swing-field-bg);
+    border: 1px solid;
+    border-color: var(--swing-dark) var(--swing-light) var(--swing-light) var(--swing-dark);
+    outline: 1px solid var(--swing-darker);
+    outline-offset: -2px;
+    color: var(--swing-text);
+    font-family: var(--swing-font);
+    font-size: 11px;
+    padding: 2px 4px;
+    width: 100%;
+}
+.swing-field:focus {
+    outline-color: var(--swing-select);
+    background: #FFFFF0;
+}
+.swing-field::placeholder { color: var(--swing-text-disabled); }
+.swing-field[type="file"] {
+    padding: 1px 2px;
+    cursor: pointer;
+}
+
+/* ---- JLabel ---- */
+.swing-label {
+    font-family: var(--swing-font);
+    font-size: 11px;
+    color: var(--swing-text);
+    display: block;
+    margin-bottom: 2px;
+}
+.swing-label-bold { font-weight: bold; }
+
+/* ---- JPanel ---- */
+.swing-panel {
+    background: var(--swing-bg);
+    padding: 8px;
+}
+.swing-panel-titled {
+    border: 1px solid var(--swing-dark);
+    box-shadow: inset 1px 1px 0 var(--swing-light);
+    padding: 14px 8px 8px 8px;
+    position: relative;
+    margin-top: 8px;
+}
+.swing-panel-titled .panel-title {
+    position: absolute;
+    top: -8px;
+    left: 8px;
+    background: var(--swing-bg);
+    padding: 0 4px;
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--swing-text);
+}
+
+/* ---- JTable ---- */
+.swing-table-container {
+    background: var(--swing-field-bg);
+    border: 1px solid;
+    border-color: var(--swing-dark) var(--swing-light) var(--swing-light) var(--swing-dark);
+    outline: 1px solid var(--swing-darker);
+    outline-offset: -2px;
+    overflow: auto;
+}
+.swing-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-family: var(--swing-font);
+    font-size: 11px;
+    color: var(--swing-text);
+}
+.swing-table thead tr th {
+    background: var(--swing-bg);
+    border-right: 1px solid var(--swing-dark);
+    border-bottom: 2px solid var(--swing-dark);
+    border-top: 1px solid var(--swing-light);
+    border-left: 1px solid var(--swing-light);
+    padding: 3px 6px;
+    text-align: left;
+    font-weight: bold;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.swing-table thead tr th:first-child { border-left: none; }
+.swing-table thead tr th:hover { background: #D8D4CC; }
+.swing-table tbody tr td {
+    padding: 2px 6px;
+    border-bottom: 1px solid #D8D8D8;
+    border-right: 1px solid #D8D8D8;
+    white-space: nowrap;
+}
+.swing-table tbody tr:nth-child(even) td { background: var(--swing-table-alt); }
+.swing-table tbody tr:hover td { background: #BECFE8; }
+.swing-table tbody tr.selected td {
+    background: var(--swing-select);
+    color: var(--swing-select-text);
+}
+.swing-table .col-center { text-align: center; }
+.swing-table .col-right { text-align: right; }
+.swing-table .col-mono { font-family: var(--swing-mono); }
+
+/* ---- JScrollPane ---- */
+.swing-scroll { overflow: auto; }
+.swing-scroll::-webkit-scrollbar { width: 16px; height: 16px; }
+.swing-scroll::-webkit-scrollbar-track { background: var(--swing-bg); border: 1px solid var(--swing-dark); }
+.swing-scroll::-webkit-scrollbar-thumb {
+    background: var(--swing-bg);
+    border: 1px solid;
+    border-color: var(--swing-light) var(--swing-dark) var(--swing-dark) var(--swing-light);
+}
+.swing-scroll::-webkit-scrollbar-button {
+    background: var(--swing-bg);
+    border: 1px solid;
+    border-color: var(--swing-light) var(--swing-dark) var(--swing-dark) var(--swing-light);
+    height: 16px;
+    width: 16px;
+}
+
+/* ---- Status Bar ---- */
+.swing-statusbar {
+    background: var(--swing-bg);
+    border-top: 2px solid var(--swing-dark);
+    border-top-color: var(--swing-dark);
+    display: flex;
+    align-items: center;
+    height: 18px;
+    flex-shrink: 0;
+}
+.swing-statusbar .status-panel {
+    border: 1px solid;
+    border-color: var(--swing-dark) var(--swing-light) var(--swing-light) var(--swing-dark);
+    padding: 1px 6px;
+    font-size: 10px;
+    color: var(--swing-text);
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* ---- JProgressBar ---- */
+.swing-progress-container {
+    background: var(--swing-field-bg);
+    border: 1px solid;
+    border-color: var(--swing-dark) var(--swing-light) var(--swing-light) var(--swing-dark);
+    height: 18px;
+    position: relative;
+    overflow: hidden;
+}
+.swing-progress-bar {
+    height: 100%;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--swing-select) 0px,
+        var(--swing-select) 10px,
+        #4040CC 10px,
+        #4040CC 12px
+    );
+    transition: width 0.3s;
+}
+.swing-progress-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--swing-text);
+    mix-blend-mode: difference;
+}
+
+/* ---- Badge/Tag ---- */
+.swing-badge {
+    font-family: var(--swing-mono);
+    font-size: 10px;
+    padding: 1px 5px;
+    display: inline-block;
+    border: 1px solid;
+}
+.swing-badge-ok { color: var(--swing-success); border-color: var(--swing-success); background: #EEFFEE; }
+.swing-badge-warn { color: var(--swing-warning); border-color: var(--swing-warning); background: #FFF8EE; }
+.swing-badge-error { color: var(--swing-error); border-color: var(--swing-error); background: #FFEEEE; }
+
+/* ---- Alert Messages ---- */
+.swing-alert {
+    border: 2px solid;
+    padding: 6px 10px;
+    margin: 4px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 11px;
+}
+.swing-alert-info { border-color: #000080; background: #EEF0FF; color: #000080; }
+.swing-alert-success { border-color: var(--swing-success); background: #EEFFEE; color: var(--swing-success); }
+.swing-alert-error { border-color: var(--swing-error); background: #FFEEEE; color: var(--swing-error); }
+.swing-alert-icon { font-weight: bold; flex-shrink: 0; font-size: 14px; line-height: 1; }
+
+/* ---- Stat Card ---- */
+.swing-stat-card {
+    background: var(--swing-bg);
+    border: 1px solid;
+    border-color: var(--swing-dark) var(--swing-light) var(--swing-light) var(--swing-dark);
+    outline: 1px solid var(--swing-darker);
+    outline-offset: -2px;
+    padding: 8px;
+}
+.swing-stat-value { font-size: 28px; font-weight: bold; line-height: 1; font-family: var(--swing-mono); }
+.swing-stat-label { font-size: 10px; color: var(--swing-text-disabled); margin-top: 2px; text-transform: uppercase; }
+
+/* ---- Event Card ---- */
+.swing-event-card {
+    background: var(--swing-field-bg);
+    border: 1px solid;
+    border-color: var(--swing-dark) var(--swing-light) var(--swing-light) var(--swing-dark);
+    outline: 1px solid var(--swing-darker);
+    outline-offset: -2px;
+    cursor: pointer;
+}
+.swing-event-card:hover { background: #BECFE8; }
+.swing-event-card .card-header {
+    background: var(--swing-bg);
+    border-bottom: 1px solid var(--swing-dark);
+    padding: 3px 6px;
+    font-weight: bold;
+    font-size: 11px;
+}
+.swing-event-card .card-body { padding: 6px; }
+.swing-event-card .card-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2px;
+    font-size: 10px;
+}
+.swing-event-card .card-row .row-label {
+    color: var(--swing-text-disabled);
+    min-width: 55px;
+    flex-shrink: 0;
+}
+.swing-event-card .card-footer {
+    border-top: 1px solid var(--swing-dark);
+    padding: 4px 6px;
+    display: flex;
+    gap: 4px;
+}
+
+/* ---- Modal / JDialog ---- */
+.swing-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.swing-dialog {
+    background: var(--swing-bg);
+    border: 2px solid;
+    border-color: var(--swing-light) var(--swing-darker) var(--swing-darker) var(--swing-light);
+    min-width: 320px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.6);
+}
+.swing-dialog .dialog-title {
+    background: linear-gradient(to right, var(--swing-title-bg), #1084D0);
+    color: var(--swing-title-text);
+    font-weight: bold;
+    font-size: 11px;
+    padding: 3px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 22px;
+}
+.swing-dialog .dialog-body { padding: 10px; }
+.swing-dialog .dialog-footer {
+    border-top: 1px solid var(--swing-dark);
+    padding: 6px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+    background: var(--swing-panel);
+}
+
+/* ---- Form Grid ---- */
+.swing-form-row {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+.swing-form-row label { text-align: right; padding-right: 4px; }
+
+/* ---- Split pane ---- */
+.swing-split { display: flex; gap: 0; }
+.swing-split-divider {
+    width: 6px;
+    background: var(--swing-bg);
+    border-left: 1px solid var(--swing-dark);
+    border-right: 1px solid var(--swing-light);
+    cursor: col-resize;
+    flex-shrink: 0;
+}
+
+/* ---- Separator ---- */
+.swing-separator { height: 2px; background: var(--swing-dark); border-bottom: 1px solid var(--swing-light); margin: 4px 0; }
+
+/* ---- Scrollable area ---- */
+.swing-content-area { flex: 1; overflow: auto; padding: 8px; }
+
+/* ---- Selection color for text inputs ---- */
+::selection { background: var(--swing-select); color: var(--swing-select-text); }

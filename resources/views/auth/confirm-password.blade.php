@@ -1,27 +1,39 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
+    <div class="dialog-title">
+        <span>🔐 Confirm Password</span>
     </div>
 
-    <form method="POST" action="{{ route('password.confirm') }}">
-        @csrf
+    <div class="dialog-body">
 
-        <!-- Password -->
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div style="font-size:11px; margin-bottom:12px;">
+            This is a secure area of the application. Please confirm your password before continuing.
         </div>
 
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
-    </form>
+        @if ($errors->any())
+            <div class="swing-alert swing-alert-error" style="margin-bottom:8px;">
+                <span class="swing-alert-icon">⚠</span>
+                <div>
+                    @foreach ($errors->all() as $error)
+                        <div>• {{ $error }}</div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('password.confirm') }}" id="confirmPasswordForm">
+            @csrf
+
+            <div class="swing-form-row" style="grid-template-columns: 80px 1fr;">
+                <label class="swing-label swing-label-bold" for="password">Password:</label>
+                <input id="password" type="password" name="password"
+                       class="swing-field" required autocomplete="current-password">
+            </div>
+        </form>
+    </div>
+
+    <div class="dialog-footer">
+        <button type="submit" form="confirmPasswordForm" class="swing-btn swing-btn-primary">
+            ✅ Confirm
+        </button>
+    </div>
 </x-guest-layout>

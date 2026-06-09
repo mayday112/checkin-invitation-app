@@ -5,37 +5,68 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+        <title>{{ config('app.name', 'Hadir.in') }} - Event Check-In System</title>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased text-gray-200 bg-slate-900 selection:bg-neon-pink selection:text-white">
-        <div class="min-h-screen relative overflow-hidden">
-            <!-- Background Decorations -->
-            <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-neon-purple/20 blur-[100px] pointer-events-none"></div>
-            <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-neon-cyan/20 blur-[100px] pointer-events-none"></div>
+    <body class="swing-window" style="display:flex; flex-direction:column; min-height:100vh; overflow:hidden;">
 
+        {{-- MAIN WINDOW FRAME --}}
+        <div style="display:flex; flex-direction:column; height:100vh; overflow:hidden;">
+            
+            {{-- TITLE BAR --}}
+            <div class="swing-titlebar">
+                <svg class="title-icon" viewBox="0 0 16 16" fill="white" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="1" y="2" width="14" height="12" rx="1" fill="none" stroke="white" stroke-width="1.5"/>
+                    <path d="M1 5h14" stroke="white" stroke-width="1.5"/>
+                    <circle cx="4" cy="8.5" r="1" fill="white"/>
+                    <circle cx="8" cy="8.5" r="1" fill="white"/>
+                    <circle cx="12" cy="8.5" r="1" fill="white"/>
+                </svg>
+                <span class="title-text">Hadir.in - Event Guest Check-In System</span>
+                <div class="title-buttons">
+                    <div class="title-btn" title="Minimize">&#x2014;</div>
+                    <div class="title-btn" title="Maximize">&#x25A1;</div>
+                    <div class="title-btn" title="Close" style="background:#FF4444; color:white; font-weight:bold;">&#x2715;</div>
+                </div>
+            </div>
+
+            {{-- MENU BAR --}}
             @include('layouts.navigation')
 
-            <!-- Page Heading -->
+            {{-- PAGE HEADING TOOLBAR --}}
             @isset($header)
-                <header class="bg-glass-dark border-b border-white/10 backdrop-blur-md sticky top-0 z-30">
-                    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
+                <div class="swing-toolbar">
+                    {{ $header }}
+                </div>
             @endisset
 
-            <!-- Page Content -->
-            <main>
+            {{-- MAIN CONTENT --}}
+            <main class="swing-content-area swing-scroll" style="flex:1;">
                 {{ $slot }}
             </main>
+
+            {{-- STATUS BAR --}}
+            <div class="swing-statusbar">
+                <div class="status-panel" style="flex:1;">
+                    @if(auth()->check())
+                        Ready &bull; Logged in as: {{ auth()->user()->name }}
+                    @else
+                        Ready
+                    @endif
+                </div>
+                <div class="status-panel" style="min-width:120px;">
+                    {{ now()->format('d/m/Y H:i:s') }}
+                </div>
+                <div class="status-panel" style="min-width:80px;">
+                    @php
+                        $totalEvents = auth()->check() ? \App\Models\Event::count() : 0;
+                    @endphp
+                    Events: {{ $totalEvents }}
+                </div>
+            </div>
         </div>
+        
     </body>
 </html>

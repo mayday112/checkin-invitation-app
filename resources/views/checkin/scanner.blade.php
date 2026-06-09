@@ -1,140 +1,198 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <div>
-                <a href="{{ route('events.show', $event) }}" class="text-neon-cyan hover:text-white text-sm flex items-center mb-1 transition-colors">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    Back to Dashboard
-                </a>
-                <h2 class="font-semibold text-2xl text-transparent bg-clip-text bg-gradient-to-r from-neon-pink to-neon-purple">
-                    Check-in Scanner
-                </h2>
-            </div>
-            <div class="text-gray-400">
-                Gate: <span class="text-white font-medium">Main Gate</span>
-            </div>
-        </div>
+        <a href="{{ route('events.show', $event) }}" class="swing-btn swing-btn-toolbar">⬅ Dashboard</a>
+        <div class="toolbar-sep"></div>
+        <span style="font-size:10px; font-weight:bold; padding:0 6px;">📷 QR Scanner — {{ $event->name }}</span>
+        <div class="toolbar-sep"></div>
+        <label style="font-size:10px; padding:0 4px;">Gate:</label>
+        <select id="gateSelect" class="swing-field" style="width:140px; height:22px; padding:1px 4px;">
+            <option value="Main Gate">Main Gate</option>
+            <option value="Gate A">Gate A</option>
+            <option value="Gate B">Gate B</option>
+            <option value="VIP Gate">VIP Gate</option>
+        </select>
     </x-slot>
 
-    <div class="py-12" x-data="scannerComponent()">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-2 gap-6">
-                <!-- Scanner Section -->
-                <div class="bg-glass-dark border border-white/10 rounded-xl p-4 backdrop-blur-md shadow-lg flex flex-col items-center justify-center relative overflow-hidden">
-                    <div class="absolute inset-0 border-4 border-transparent border-t-neon-cyan border-b-neon-pink rounded-xl opacity-20 animate-pulse pointer-events-none"></div>
-                    
-                    <h3 class="text-lg font-bold text-white mb-4 text-center">Scan QR Code</h3>
-                    
-                    <div id="reader" class="w-full bg-black rounded-lg overflow-hidden border border-white/10 shadow-inner"></div>
-                    
-                    <div class="mt-6 w-full px-4">
-                        <p class="text-center text-sm text-gray-400 mb-2">Or enter guest code manually</p>
-                        <form @submit.prevent="manualCheckIn" class="flex space-x-2">
-                            <input type="text" x-model="manualCode" placeholder="EVT-..." class="flex-1 bg-slate-800 border-white/20 text-white focus:border-neon-cyan focus:ring-neon-cyan rounded-md text-sm uppercase">
-                            <button type="submit" class="px-4 py-2 bg-neon-cyan text-slate-900 font-bold rounded-md hover:bg-white transition-colors text-sm">Submit</button>
-                        </form>
-                    </div>
-                </div>
+    <div x-data="scannerApp()" style="display:flex; gap:6px; padding:8px; height:100%;">
 
-                <!-- Result Section -->
-                <div class="bg-glass-dark border border-white/10 rounded-xl p-6 backdrop-blur-md shadow-lg flex flex-col">
-                    <h3 class="text-lg font-bold text-white mb-4 border-b border-white/10 pb-2">Scan Result</h3>
-                    
-                    <div class="flex-1 flex flex-col items-center justify-center text-center p-4">
-                        <template x-if="status === 'idle'">
-                            <div class="text-gray-500 flex flex-col items-center">
-                                <svg class="w-16 h-16 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
-                                Waiting for scan...
-                            </div>
-                        </template>
+        {{-- LEFT: Scanner panel --}}
+        <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+            
+            <div class="swing-panel-titled" style="margin-top:0; flex:1; display:flex; flex-direction:column; padding: 14px 8px 8px;">
+                <div class="panel-title">Camera Feed — Html5QrcodeScanner</div>
+                
+                <div id="reader" style="width:100%;  background:#111; border: 1px solid var(--swing-darker); min-height:240px;"></div>
+                
+                <div class="swing-separator"></div>
 
-                        <template x-if="status === 'loading'">
-                            <div class="text-neon-cyan animate-pulse">
-                                Processing...
-                            </div>
-                        </template>
-
-                        <template x-if="status === 'success'">
-                            <div class="w-full text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/20 text-green-400 mb-4 border border-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.5)]">
-                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                </div>
-                                <h4 class="text-2xl font-bold text-white mb-2" x-text="guest.name"></h4>
-                                <div class="bg-white/5 rounded-lg p-4 inline-block text-left mb-4 border border-white/10">
-                                    <div class="text-sm text-gray-400">Code: <span class="text-neon-cyan font-mono" x-text="guest.guest_code"></span></div>
-                                    <div class="text-sm text-gray-400 mt-1">Quota: <span class="text-white font-bold" x-text="guest.quota"></span> Person(s)</div>
-                                </div>
-                                <p class="text-green-400 font-medium" x-text="message"></p>
-                            </div>
-                        </template>
-
-                        <template x-if="status === 'error'">
-                            <div class="w-full text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/20 text-red-400 mb-4 border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.5)]">
-                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                </div>
-                                <h4 class="text-xl font-bold text-white mb-2" x-show="guest" x-text="guest?.name"></h4>
-                                <p class="text-red-400 font-medium mt-2" x-text="message"></p>
-                            </div>
-                        </template>
-                    </div>
-
-                    <div class="mt-4 pt-4 border-t border-white/10 text-center">
-                        <button @click="reset()" x-show="status === 'success' || status === 'error'" class="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors border border-white/20">
-                            Scan Next
+                {{-- Manual Input --}}
+                <div class="swing-panel-titled" style="margin-top:0; padding: 14px 8px 8px;">
+                    <div class="panel-title">Manual Entry — JTextField</div>
+                    <div style="display:flex; gap:4px; align-items:center;">
+                        <label class="swing-label" style="margin:0; white-space:nowrap;">Guest Code:</label>
+                        <input type="text" x-model="manualCode" id="manualCodeInput"
+                               @keydown.enter="manualCheckIn()"
+                               class="swing-field" style="flex:1; text-transform:uppercase;"
+                               placeholder="e.g. EVT-1-A81XZ9">
+                        <button @click="manualCheckIn()" class="swing-btn swing-btn-primary" style="white-space:nowrap;">
+                            ▶ Submit
                         </button>
                     </div>
                 </div>
             </div>
+
         </div>
+
+        {{-- RIGHT: Result panel --}}
+        <div style="width:300px; flex-shrink:0; display:flex; flex-direction:column; gap:6px;">
+            
+            {{-- Result Output --}}
+            <div class="swing-panel-titled" style="margin-top:0; flex:1; padding: 14px 8px 8px;">
+                <div class="panel-title">Scan Result — JTextArea (Output)</div>
+
+                {{-- Idle state --}}
+                <template x-if="status === 'idle'">
+                    <div style="text-align:center; padding:20px; color:var(--swing-text-disabled);">
+                        <div style="font-size:32px; margin-bottom:8px;">📷</div>
+                        <div style="font-size:11px;">Waiting for scan...</div>
+                        <div style="font-size:10px; font-family:var(--swing-mono); margin-top:6px;">status = IDLE</div>
+                    </div>
+                </template>
+
+                {{-- Loading --}}
+                <template x-if="status === 'loading'">
+                    <div style="text-align:center; padding:20px; color:#000080;">
+                        <div style="font-size:32px; margin-bottom:8px; animation: pulse 1s infinite;">⏳</div>
+                        <div style="font-size:11px; font-weight:bold;">Processing...</div>
+                        <div style="font-size:10px; font-family:var(--swing-mono); margin-top:6px;">status = PROCESSING</div>
+                    </div>
+                </template>
+
+                {{-- Success --}}
+                <template x-if="status === 'success'">
+                    <div>
+                        <div style="background:var(--swing-success); color:white; padding:4px 8px; font-weight:bold; margin-bottom:8px; font-size:11px;">
+                            ✓ CHECK-IN SUCCESSFUL
+                        </div>
+                        
+                        <div style="font-family:var(--swing-mono); font-size:10px; background:var(--swing-field-bg); border:1px inset; padding:8px; margin-bottom:6px; border-color: var(--swing-dark) var(--swing-light) var(--swing-light) var(--swing-dark);">
+                            <div style="color:var(--swing-text-disabled);">// Guest Object</div>
+                            <div>name: "<strong x-text="guest.name"></strong>"</div>
+                            <div>code: "<span x-text="guest.guest_code"></span>"</div>
+                            <div>quota: <span x-text="guest.quota"></span></div>
+                            <div>status: "<span style="color:var(--swing-success);" x-text="guest.status"></span>"</div>
+                        </div>
+
+                        <div class="swing-alert swing-alert-success" style="font-size:10px; padding:4px 8px;">
+                            <span class="swing-alert-icon">✓</span>
+                            <span x-text="message"></span>
+                        </div>
+                    </div>
+                </template>
+
+                {{-- Error --}}
+                <template x-if="status === 'error'">
+                    <div>
+                        <div style="background:var(--swing-error); color:white; padding:4px 8px; font-weight:bold; margin-bottom:8px; font-size:11px;">
+                            ✕ CHECK-IN FAILED
+                        </div>
+
+                        <template x-if="guest">
+                            <div style="font-family:var(--swing-mono); font-size:10px; background:var(--swing-field-bg); border:1px inset; padding:8px; margin-bottom:6px; border-color: var(--swing-dark) var(--swing-light) var(--swing-light) var(--swing-dark);">
+                                <div style="color:var(--swing-text-disabled);">// Guest Object</div>
+                                <div>name: "<strong x-text="guest.name"></strong>"</div>
+                                <div>status: "<span style="color:var(--swing-error);" x-text="guest.status"></span>"</div>
+                            </div>
+                        </template>
+
+                        <div class="swing-alert swing-alert-error" style="font-size:10px; padding:4px 8px;">
+                            <span class="swing-alert-icon">⚠</span>
+                            <span x-text="message"></span>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            {{-- Action Buttons --}}
+            <div class="swing-raised" style="padding:6px; display:flex; flex-direction:column; gap:4px;">
+                <button @click="reset()" 
+                        x-show="status === 'success' || status === 'error'" 
+                        class="swing-btn swing-btn-primary" style="width:100%;">
+                    🔄 Scan Next Guest
+                </button>
+                <button @click="reset()" 
+                        x-show="status !== 'idle'" 
+                        class="swing-btn" style="width:100%;">
+                    ↩ Reset
+                </button>
+            </div>
+
+            {{-- Log Panel --}}
+            <div class="swing-panel-titled" style="margin-top:0; padding: 14px 8px 8px;">
+                <div class="panel-title">Activity Log — JTextArea</div>
+                <div id="logArea" style="height:100px; overflow-y:auto; font-family:var(--swing-mono); font-size:9px; background:var(--swing-field-bg); border-color: var(--swing-dark) var(--swing-light) var(--swing-light) var(--swing-dark); border: 1px solid var(--swing-dark); padding:4px;" x-html="logHtml">
+                </div>
+            </div>
+
+        </div>
+
     </div>
 
-    <!-- html5-qrcode library -->
+    {{-- html5-qrcode --}}
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
-        function scannerComponent() {
+        function scannerApp() {
             return {
-                status: 'idle', // idle, loading, success, error
+                status: 'idle',
                 message: '',
                 guest: null,
                 manualCode: '',
+                logHtml: '<span style="color:var(--swing-text-disabled);">[SYS] Scanner initialized.<br>[SYS] Waiting for camera...<br></span>',
                 html5QrcodeScanner: null,
                 eventId: '{{ $event->id }}',
 
                 init() {
-                    // Initialize Scanner
-                    this.html5QrcodeScanner = new Html5QrcodeScanner(
-                        "reader", { fps: 10, qrbox: {width: 250, height: 250} }, /* verbose= */ false);
-                    
-                    this.html5QrcodeScanner.render(this.onScanSuccess.bind(this), this.onScanFailure.bind(this));
-                    
-                    // Tailwind styles for scanner elements
-                    setTimeout(() => {
-                        const readerButton = document.getElementById('html5-qrcode-button-camera-permission');
-                        if (readerButton) {
-                            readerButton.className = 'px-4 py-2 bg-neon-cyan text-slate-900 rounded font-medium my-2';
-                        }
-                    }, 500);
+                    if(this.html5QrcodeScanner) this.html5QrcodeScanner.clear();
+
+                    this.html5QrcodeScanner = new Html5QrcodeScanner (
+                        "reader",
+                        { fps: 10, qrbox: { width: 350, height: 350 } },
+                        false
+                    );
+                    this.html5QrcodeScanner.render(
+                        this.onScanSuccess.bind(this),
+                        () => {}
+                    );
+                    this.log('[SYS] Camera started.', '#000080');
                 },
 
-                onScanSuccess(decodedText, decodedResult) {
-                    if (this.status === 'loading' || this.status === 'success') return; // Prevent double scan
+                log(msg, color = '#000000') {
+                    const now = new Date().toLocaleTimeString('id-ID');
+                    this.logHtml += `<span style="color:${color};">[${now}] ${msg}<br></span>`;
+                    this.$nextTick(() => {
+                        const el = document.getElementById('logArea');
+                        if (el) el.scrollTop = el.scrollHeight;
+                    });
+                },
+
+                onScanSuccess(decodedText) {
+                    if (this.status === 'loading' || this.status === 'success') return;
+                    this.log(`[SCAN] Code: ${decodedText}`, '#006600');
                     this.processCheckIn(decodedText);
-                },
-
-                onScanFailure(error) {
-                    // handle scan failure, usually better to ignore and keep scanning
                 },
 
                 manualCheckIn() {
                     if (!this.manualCode) return;
+                    this.log(`[MANUAL] Code: ${this.manualCode.trim()}`, '#000080');
                     this.processCheckIn(this.manualCode.trim());
                 },
 
                 processCheckIn(code) {
                     this.status = 'loading';
                     this.guest = null;
-                    
+
+                    const gate = document.getElementById('gateSelect')?.value || 'Main Gate';
+
                     fetch(`/events/${this.eventId}/checkin`, {
                         method: 'POST',
                         headers: {
@@ -142,27 +200,27 @@
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                             'Accept': 'application/json'
                         },
-                        body: JSON.stringify({
-                            guest_code: code,
-                            gate: 'Main Gate'
-                        })
+                        body: JSON.stringify({ guest_code: code, gate: gate })
                     })
-                    .then(response => response.json())
+                    .then(r => r.json())
                     .then(data => {
                         if (data.success) {
                             this.status = 'success';
                             this.message = data.message;
                             this.guest = data.guest;
-                            this.html5QrcodeScanner.pause(true); // pause scanner on success
+                            this.log(`[OK] ${data.guest.name} checked in successfully.`, '#006600');
+                            try { this.html5QrcodeScanner.pause(true); } catch(e) {}
                         } else {
                             this.status = 'error';
                             this.message = data.message;
                             this.guest = data.guest || null;
+                            this.log(`[ERR] ${data.message}`, '#CC0000');
                         }
                     })
-                    .catch(error => {
+                    .catch(() => {
                         this.status = 'error';
-                        this.message = 'Network error occurred.';
+                        this.message = 'Network error — service unavailable.';
+                        this.log('[ERR] Network error.', '#CC0000');
                     });
                 },
 
@@ -171,11 +229,14 @@
                     this.message = '';
                     this.guest = null;
                     this.manualCode = '';
-                    try {
-                        this.html5QrcodeScanner.resume();
-                    } catch (e) {}
+                    this.log('[SYS] Reset. Ready for next scan.', '#000080');
+                    try { this.html5QrcodeScanner.resume(); } catch(e) {}
                 }
             }
         }
     </script>
+
+    <style>
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    </style>
 </x-app-layout>

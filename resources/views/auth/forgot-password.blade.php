@@ -1,25 +1,49 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+    <div class="dialog-title">
+        <span>🔑 Forgot Password</span>
     </div>
 
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <div class="dialog-body">
 
-    <form method="POST" action="{{ route('password.email') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div style="font-size:11px; margin-bottom:12px;">
+            Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
-    </form>
+        <!-- Session Status -->
+        @if (session('status'))
+            <div class="swing-alert swing-alert-success" style="margin-bottom:8px;">
+                <span class="swing-alert-icon">✓</span>
+                <span>{{ session('status') }}</span>
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="swing-alert swing-alert-error" style="margin-bottom:8px;">
+                <span class="swing-alert-icon">⚠</span>
+                <div>
+                    @foreach ($errors->all() as $error)
+                        <div>• {{ $error }}</div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('password.email') }}" id="forgotPasswordForm">
+            @csrf
+
+            <div class="swing-form-row" style="grid-template-columns: 80px 1fr;">
+                <label class="swing-label swing-label-bold" for="email">Email:</label>
+                <input id="email" type="email" name="email" value="{{ old('email') }}"
+                       class="swing-field" required autofocus
+                       placeholder="user@example.com">
+            </div>
+        </form>
+    </div>
+
+    <div class="dialog-footer" style="justify-content:space-between;">
+        <a href="{{ route('login') }}" class="swing-btn">⬅ Back to Login</a>
+        <button type="submit" form="forgotPasswordForm" class="swing-btn swing-btn-primary">
+            ✉ Email Reset Link
+        </button>
+    </div>
 </x-guest-layout>

@@ -51,11 +51,11 @@ class GuestImportService
             }
 
             // check duplicate phone in this event
-            $exists = $event->guests()->where('phone', $phone)->exists();
-            if ($exists) {
-                $failed++;
-                continue;
-            }
+            // $exists = $event->guests()->where('phone', $phone)->exists();
+            // if ($exists) {
+            //     $failed++;
+            //     continue;
+            // }
 
             $guestCode = 'EVT-' . $event->id . '-' . strtoupper(Str::random(6));
 

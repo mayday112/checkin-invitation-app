@@ -1,146 +1,194 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-                <a href="{{ route('events.show', $event) }}" class="text-neon-cyan hover:text-white text-sm flex items-center mb-1 transition-colors">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    Back to Dashboard
-                </a>
-                <h2 class="font-semibold text-2xl text-transparent bg-clip-text bg-gradient-to-r from-neon-pink to-neon-purple">
-                    Guests for {{ $event->name }}
-                </h2>
-            </div>
-            
-            <div class="flex space-x-3" x-data="{ openImport: false, openAdd: false }">
-                <button @click="openImport = true" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-lg font-medium transition-all">
-                    Import CSV/XLSX
-                </button>
-                <button @click="openAdd = true" class="px-4 py-2 bg-gradient-to-r from-neon-pink to-neon-purple hover:from-neon-purple hover:to-neon-cyan text-white rounded-lg font-medium shadow-neon-pink transition-all transform hover:scale-105">
-                    + Add Guest
-                </button>
-
-                <!-- Import Modal -->
-                <div x-show="openImport" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" style="display: none;">
-                    <div @click.away="openImport = false" class="bg-glass-dark border border-white/10 rounded-xl p-6 w-full max-w-md shadow-2xl relative">
-                        <button @click="openImport = false" class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
-                        <h3 class="text-xl font-bold text-white mb-4">Import Guests</h3>
-                        <p class="text-sm text-gray-400 mb-4">Upload a CSV or XLSX file containing 'name' and 'phone' columns.</p>
-                        
-                        <form action="{{ route('guests.import', $event) }}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            <input type="file" name="file" accept=".csv, .xlsx, .xls" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-neon-pink file:text-white hover:file:bg-neon-purple transition-all mb-4" required>
-                            
-                            <div class="flex justify-end">
-                                <button type="submit" class="px-4 py-2 bg-neon-cyan text-slate-900 rounded-lg font-medium hover:bg-white transition-colors">Import Now</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Add Guest Modal -->
-                <div x-show="openAdd" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" style="display: none;">
-                    <div @click.away="openAdd = false" class="bg-glass-dark border border-white/10 rounded-xl p-6 w-full max-w-md shadow-2xl relative">
-                        <button @click="openAdd = false" class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
-                        <h3 class="text-xl font-bold text-white mb-4">Add Manual Guest</h3>
-                        
-                        <form action="{{ route('guests.store', $event) }}" method="POST">
-                            @csrf
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm text-gray-300">Name</label>
-                                    <input type="text" name="name" class="block mt-1 w-full bg-slate-800 border-white/20 text-white focus:border-neon-pink focus:ring-neon-pink rounded-md" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm text-gray-300">WhatsApp Phone (e.g., 628...)</label>
-                                    <input type="text" name="phone" class="block mt-1 w-full bg-slate-800 border-white/20 text-white focus:border-neon-pink focus:ring-neon-pink rounded-md" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm text-gray-300">Quota</label>
-                                    <input type="number" name="quota" value="1" min="1" class="block mt-1 w-full bg-slate-800 border-white/20 text-white focus:border-neon-pink focus:ring-neon-pink rounded-md">
-                                </div>
-                            </div>
-                            
-                            <div class="flex justify-end mt-6">
-                                <button type="submit" class="px-4 py-2 bg-neon-pink text-white rounded-lg font-medium hover:bg-neon-purple transition-colors">Add & Send WA</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+        <a href="{{ route('events.show', $event) }}" class="swing-btn swing-btn-toolbar">⬅ Dashboard</a>
+        <div class="toolbar-sep"></div>
+        <button onclick="document.getElementById('addGuestDialog').style.display='flex'" class="swing-btn swing-btn-toolbar swing-btn-primary">➕ Add Guest</button>
+        <button onclick="document.getElementById('importDialog').style.display='flex'" class="swing-btn swing-btn-toolbar">📤 Import CSV/XLSX</button>
+        <div class="toolbar-sep"></div>
+        <a href="{{ route('checkin.scanner', $event) }}" class="swing-btn swing-btn-toolbar">📷 Open Scanner</a>
+        <div class="toolbar-sep"></div>
+        <span style="font-size:10px; padding:0 6px; font-weight:bold;">{{ $event->name }} — Guest List</span>
+        <span style="font-size:10px; color:var(--swing-text-disabled);">({{ $guests->total() }} records)</span>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
-            @if(session('success'))
-                <div class="mb-6 p-4 bg-neon-cyan/20 border border-neon-cyan text-neon-cyan rounded-lg">
-                    {{ session('success') }}
-                </div>
-            @endif
+    {{-- ============================
+         DIALOG: Add Guest (hidden)
+         ============================ --}}
+    <div id="addGuestDialog" class="swing-dialog-overlay" style="display:none;">
+        <div class="swing-dialog">
+            <div class="dialog-title">
+                <span>➕ Add Guest Manually</span>
+                <button onclick="document.getElementById('addGuestDialog').style.display='none'" style="background:none;border:none;color:white;cursor:pointer;font-size:14px;">✕</button>
+            </div>
+            <div class="dialog-body">
+                <form method="POST" action="{{ route('guests.store', $event) }}" id="addGuestForm">
+                    @csrf
 
-            <!-- Guests Table -->
-            <div class="bg-glass-dark border border-white/10 rounded-xl overflow-hidden backdrop-blur-md">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-white/10 bg-white/5 text-gray-300 text-sm">
-                                <th class="p-4 font-semibold">Code</th>
-                                <th class="p-4 font-semibold">Name</th>
-                                <th class="p-4 font-semibold">Phone</th>
-                                <th class="p-4 font-semibold text-center">Quota</th>
-                                <th class="p-4 font-semibold">Status</th>
-                                <th class="p-4 font-semibold text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-sm">
-                            @forelse($guests as $guest)
-                                <tr class="border-b border-white/5 hover:bg-white/5 transition-colors group">
-                                    <td class="p-4 text-neon-cyan font-mono">{{ $guest->guest_code }}</td>
-                                    <td class="p-4 text-white font-medium">{{ $guest->name }}</td>
-                                    <td class="p-4 text-gray-400">{{ $guest->phone }}</td>
-                                    <td class="p-4 text-gray-300 text-center">{{ $guest->quota }}</td>
-                                    <td class="p-4">
-                                        @if($guest->status === 'checked_in')
-                                            <span class="px-2 py-1 bg-neon-cyan/20 text-neon-cyan rounded text-xs font-bold border border-neon-cyan/30">Checked In</span>
-                                        @elseif($guest->status === 'cancelled')
-                                            <span class="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs font-bold border border-red-500/30">Cancelled</span>
-                                        @else
-                                            <span class="px-2 py-1 bg-neon-pink/20 text-neon-pink rounded text-xs font-bold border border-neon-pink/30">Pending</span>
-                                        @endif
-                                    </td>
-                                    <td class="p-4 text-right space-x-2">
-                                        <a href="{{ route('guests.qr', $guest) }}" class="inline-block p-2 bg-white/10 hover:bg-neon-purple text-white rounded transition-colors" title="Download QR">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                        </a>
-                                        <form action="{{ route('guests.destroy', $guest) }}" method="POST" class="inline-block" onsubmit="return confirm('Delete this guest?');">
+                    <div class="swing-form-row">
+                        <label class="swing-label swing-label-bold">Full Name:</label>
+                        <input type="text" name="name" class="swing-field" required placeholder="Guest full name">
+                    </div>
+
+                    <div class="swing-form-row">
+                        <label class="swing-label">WA Phone:</label>
+                        <div>
+                            <input type="text" name="phone" class="swing-field" required placeholder="628xxxxxxxx">
+                            <span style="font-size:9px; color:var(--swing-text-disabled);">Format: 628... (country code)</span>
+                        </div>
+                    </div>
+
+                    <div class="swing-form-row">
+                        <label class="swing-label">Quota:</label>
+                        <input type="number" name="quota" class="swing-field" value="1" min="1" style="width:80px;">
+                    </div>
+
+                    <div class="swing-separator"></div>
+                    <div style="font-size:10px; color:var(--swing-text-disabled);">
+                        ⚠ WhatsApp invitation & QR Code will be sent via WA Service after submit.
+                    </div>
+                </form>
+            </div>
+            <div class="dialog-footer">
+                <button type="submit" form="addGuestForm" class="swing-btn swing-btn-primary">✅ OK</button>
+                <button onclick="document.getElementById('addGuestDialog').style.display='none'" class="swing-btn">❌ Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- ============================
+         DIALOG: Import (hidden)
+         ============================ --}}
+    <div id="importDialog" class="swing-dialog-overlay" style="display:none;">
+        <div class="swing-dialog">
+            <div class="dialog-title">
+                <span>📤 Import Guests — File Chooser</span>
+                <button onclick="document.getElementById('importDialog').style.display='none'" style="background:none;border:none;color:white;cursor:pointer;font-size:14px;">✕</button>
+            </div>
+            <div class="dialog-body">
+                <form method="POST" action="{{ route('guests.import', $event) }}" enctype="multipart/form-data" id="importForm">
+                    @csrf
+
+                    <div class="swing-panel-titled" style="margin-top:0; padding: 14px 8px 8px;">
+                        <div class="panel-title">File Selection</div>
+                        <div class="swing-form-row" style="grid-template-columns: 80px 1fr;">
+                            <label class="swing-label">File Path:</label>
+                            <input type="file" name="file" class="swing-field" accept=".csv,.xlsx,.xls" required>
+                        </div>
+                    </div>
+
+                    <div class="swing-panel-titled" style="margin-top:8px; padding: 14px 8px 8px;">
+                        <div class="panel-title">File Format Requirements</div>
+                        <div style="font-size:10px; font-family:var(--swing-mono); line-height:1.8;">
+                            <div style="color:var(--swing-text-disabled);">/* Required columns: */</div>
+                            <div><span style="color:#000080;">String</span> name;    <span style="color:var(--swing-success);">// required</span></div>
+                            <div><span style="color:#000080;">String</span> phone;   <span style="color:var(--swing-success);">// required, e.g. 628xxx</span></div>
+                            <div><span style="color:#000080;">int</span>    quota;   <span style="color:var(--swing-text-disabled);">// optional, default=1</span></div>
+                        </div>
+                    </div>
+                    <div style="font-size:10px; color:var(--swing-text-disabled); margin-top:6px;">
+                        Supported: .csv, .xlsx, .xls — Duplicates by phone will be skipped.
+                    </div>
+                </form>
+            </div>
+            <div class="dialog-footer">
+                <button type="submit" form="importForm" class="swing-btn swing-btn-primary">✅ Import</button>
+                <button onclick="document.getElementById('importDialog').style.display='none'" class="swing-btn">❌ Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- ============================
+         MAIN CONTENT
+         ============================ --}}
+    <div style="display:flex; flex-direction:column; height:100%; padding:6px; gap:4px;">
+
+        @if(session('success'))
+            <div class="swing-alert swing-alert-success">
+                <span class="swing-alert-icon">✓</span>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="swing-alert swing-alert-error">
+                <span class="swing-alert-icon">⚠</span>
+                <div>
+                    @foreach ($errors->all() as $error)
+                        <div>• {{ $error }}</div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        {{-- Guest Table --}}
+        <div class="swing-panel-titled" style="margin-top:0; flex:1; display:flex; flex-direction:column; padding: 14px 8px 8px;">
+            <div class="panel-title">Guest Table — {{ $event->name }}</div>
+            
+            <div class="swing-table-container swing-scroll" style="flex:1; height:calc(100vh - 220px);">
+                <table class="swing-table">
+                    <thead>
+                        <tr>
+                            <th style="width:30px;">#</th>
+                            <th style="width:140px;">Guest Code</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th class="col-center" style="width:55px;">Quota</th>
+                            <th class="col-center" style="width:80px;">Status</th>
+                            <th style="width:100px;">Checked In At</th>
+                            <th style="width:90px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($guests as $i => $guest)
+                            <tr>
+                                <td class="col-mono col-center" style="color:var(--swing-text-disabled);">{{ ($guests->currentPage() - 1) * $guests->perPage() + $i + 1 }}</td>
+                                <td class="col-mono" style="font-size:10px;">{{ $guest->guest_code }}</td>
+                                <td><strong>{{ $guest->name }}</strong></td>
+                                <td class="col-mono" style="font-size:10px;">{{ $guest->phone }}</td>
+                                <td class="col-center">{{ $guest->quota }}</td>
+                                <td class="col-center">
+                                    @if($guest->status === 'checked_in')
+                                        <span class="swing-badge swing-badge-ok">CHECKED_IN</span>
+                                    @elseif($guest->status === 'cancelled')
+                                        <span class="swing-badge swing-badge-error">CANCELLED</span>
+                                    @else
+                                        <span class="swing-badge swing-badge-warn">PENDING</span>
+                                    @endif
+                                </td>
+                                <td class="col-mono" style="font-size:9px;">
+                                    {{ $guest->checked_in_at ? $guest->checked_in_at->format('d/m/Y H:i') : '—' }}
+                                </td>
+                                <td>
+                                    <div style="display:flex; gap:2px;">
+                                        <a href="{{ route('guests.qr', $guest) }}" class="swing-btn swing-btn-toolbar" title="Download QR">🖨️</a>
+                                        <form action="{{ route('guests.destroy', $guest) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete {{ $guest->name }}?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="p-2 bg-white/10 hover:bg-red-500 text-white rounded transition-colors" title="Delete">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            </button>
+                                            <button type="submit" class="swing-btn swing-btn-toolbar" title="Delete" style="color:var(--swing-error);">🗑️</button>
                                         </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="p-8 text-center text-gray-500">
-                                        No guests found. Try importing or adding one manually.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-                
-                @if($guests->hasPages())
-                    <div class="p-4 border-t border-white/10 bg-black/20">
-                        {{ $guests->links() }}
-                    </div>
-                @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" style="padding:20px; text-align:center; color:var(--swing-text-disabled);">
+                                    (no guest records) — Add guests manually or import a file.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-
         </div>
+
+        {{-- Pagination --}}
+        @if($guests->hasPages())
+            <div style="display:flex; align-items:center; gap:4px; font-size:10px; flex-shrink:0;">
+                <span style="color:var(--swing-text-disabled);">Page:</span>
+                {{ $guests->links() }}
+                <span style="color:var(--swing-text-disabled);">Total: {{ $guests->total() }} records</span>
+            </div>
+        @endif
+
     </div>
 </x-app-layout>

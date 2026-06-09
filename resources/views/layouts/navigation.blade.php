@@ -1,108 +1,53 @@
-<nav x-data="{ open: false }" class="bg-glass-dark border-b border-white/10 backdrop-blur-md sticky top-0 z-40">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}" class="text-2xl font-bold font-sans tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-neon-pink to-neon-cyan">
-                        HADIR.IN
-                    </a>
-                </div>
+{{-- Java Swing JMenuBar --}}
+<nav class="swing-menubar" x-data="{ userMenu: false }">
+    {{-- App Icon & name --}}
+    <span class="menu-item" style="font-weight:bold; color:#000080; letter-spacing:0; cursor:default;">
+        📋 Hadir.in
+    </span>
+    <div class="menu-separator"></div>
+    
+    {{-- File Menu --}}
+    <a href="{{ route('events.index') }}" 
+       class="menu-item {{ request()->routeIs('events.*') ? 'active' : '' }}">
+        File
+    </a>
+    
+    {{-- Events submenu trigger --}}
+    <a href="{{ route('events.create') }}" 
+       class="menu-item {{ request()->is('events/create') ? 'active' : '' }}">
+        New Event
+    </a>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-gray-300 hover:text-neon-cyan transition-colors">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('events.index')" :active="request()->routeIs('events.*')" class="text-gray-300 hover:text-neon-pink transition-colors">
-                        {{ __('Events') }}
-                    </x-nav-link>
-                </div>
+    <div class="menu-separator"></div>
+
+    {{-- View Menu --}}
+    <a href="{{ route('events.index') }}" 
+       class="menu-item {{ request()->routeIs('events.index') ? 'active' : '' }}">
+        View
+    </a>
+
+    <div class="menu-separator"></div>
+
+    {{-- Tools --}}
+    <span class="menu-item" style="cursor:default; color:var(--swing-text-disabled);">Tools</span>
+    <span class="menu-item" style="cursor:default; color:var(--swing-text-disabled);">Help</span>
+
+    {{-- Right Side: User Info --}}
+    <div class="menu-right">
+        @auth
+            <div class="menu-separator"></div>
+            <div class="menu-user" style="display:flex; align-items:center; gap:6px;">
+                <span style="color:#000080; font-weight:bold;">👤</span>
+                <span>{{ auth()->user()->name }}</span>
             </div>
-
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-300 bg-white/5 hover:text-white hover:bg-white/10 focus:outline-none transition ease-in-out duration-150 backdrop-blur-sm">
-                            <div>{{ Auth::user()->name ?? 'Guest' }}</div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <div class="bg-slate-800 border border-white/10 rounded-md shadow-neon-purple/20">
-                            <x-dropdown-link :href="route('profile.edit')" class="hover:bg-white/10 hover:text-neon-cyan">
-                                {{ __('Profile') }}
-                            </x-dropdown-link>
-
-                            <!-- Authentication -->
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-
-                                <x-dropdown-link :href="route('logout')"
-                                        onclick="event.preventDefault();
-                                                    this.closest('form').submit();" class="hover:bg-white/10 hover:text-neon-pink">
-                                    {{ __('Log Out') }}
-                                </x-dropdown-link>
-                            </form>
-                        </div>
-                    </x-slot>
-                </x-dropdown>
-            </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-white/10 focus:outline-none focus:bg-white/10 focus:text-white transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+            <div class="menu-separator"></div>
+            <a href="{{ route('profile.edit') }}" class="menu-item">Profile</a>
+            <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+                @csrf
+                <button type="submit" class="menu-item" style="background:none; border:none; cursor:pointer; font-family:inherit; font-size:11px;">
+                    Logout
                 </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-glass-dark backdrop-blur-md border-b border-white/10">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-gray-300 hover:text-neon-cyan hover:bg-white/5">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('events.index')" :active="request()->routeIs('events.*')" class="text-gray-300 hover:text-neon-pink hover:bg-white/5">
-                {{ __('Events') }}
-            </x-responsive-nav-link>
-        </div>
-
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-white/10">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-200">{{ Auth::user()->name ?? 'Guest' }}</div>
-                <div class="font-medium text-sm text-gray-400">{{ Auth::user()->email ?? '' }}</div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')" class="text-gray-300 hover:text-neon-cyan hover:bg-white/5">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();" class="text-gray-300 hover:text-neon-pink hover:bg-white/5">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
-            </div>
-        </div>
+            </form>
+        @endauth
     </div>
 </nav>
